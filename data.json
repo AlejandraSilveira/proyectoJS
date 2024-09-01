@@ -1,0 +1,8 @@
+[
+    { "id": 1, "nombre": "PANTALONES", "precio": 50 },
+    { "id": 2, "nombre": "BUZOS", "precio": 40 },
+    { "id": 3, "nombre": "REMERAS", "precio": 20 },
+    { "id": 4, "nombre": "VESTIDOS", "precio": 70 },
+    { "id": 5, "nombre": "CARTERAS", "precio": 100 },
+    { "id": 6, "nombre": "CALZADO", "precio": 60 }
+]

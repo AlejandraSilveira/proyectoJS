@@ -1,14 +1,5 @@
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-const productos = [
-    { id: 1, nombre: "PANTALONES", precio: 50 },
-    { id: 2, nombre: "BUZOS", precio: 40 },
-    { id: 3, nombre: "REMERAS", precio: 20 },
-    { id: 4, nombre: "VESTIDOS", precio: 70 },
-    { id: 5, nombre: "CARTERAS", precio: 100 },
-    { id: 6, nombre: "CALZADO", precio: 60 }
-];
-
 function agregarAlCarrito(producto) {
     carrito.push(producto);
     localStorage.setItem("carrito", JSON.stringify(carrito));
@@ -61,7 +52,21 @@ function crearCard(producto) {
     return card;
 }
 
-function mostrarProductos() {
+async function obtenerProductos() {
+    try {
+        const response = await fetch('data.json');
+        if (!response.ok) {
+            throw new Error('Error al obtener productos');
+        }
+        const productos = await response.json();
+        return productos;
+    } catch (error) {
+        console.error('Hubo un problema con la petición Fetch:', error);
+        return []; 
+    }
+}
+async function mostrarProductos() {
+    const productos = await obtenerProductos();
     const container = document.getElementById("productos-container");
     container.innerHTML = "";
     productos.forEach(producto => {
@@ -69,15 +74,45 @@ function mostrarProductos() {
         container.appendChild(card);
     });
 }
-
-function finalizarCompra() {
+async function finalizarCompra() {
     if (carrito.length === 0) {
-        alert("Tu carrito está vacío.");
+        Swal.fire({
+            icon: 'warning',
+            title: 'Carrito vacío',
+            text: 'Tu carrito está vacío.',
+            confirmButtonText: 'OK'
+        });
     } else {
-        localStorage.removeItem("carrito");
-        carrito = [];
-        renderizarCarrito();
-        alert("¡Gracias por tu compra!");
+        try {
+            const simulatedResponse = new Promise((resolve) => {
+                setTimeout(() => resolve({ success: true }), 1000); 
+            });
+
+            const result = await simulatedResponse;
+            if (result.success) {
+                localStorage.removeItem("carrito");
+                carrito = [];
+                renderizarCarrito();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Compra realizada!',
+                    text: '¡Gracias por tu compra!',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                throw new Error('Error en la compra');
+            }
+
+        } catch (error) {
+            console.error('Error al procesar la compra:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un problema al procesar tu compra. Inténtalo nuevamente.',
+                confirmButtonText: 'OK'
+            });
+        }
     }
 }
 
